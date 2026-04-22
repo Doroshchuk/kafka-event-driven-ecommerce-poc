@@ -1,0 +1,49 @@
+services:
+  # Kafka will be added later (plus any supporting services).
+  # This file is intentionally minimal as part of the initial scaffold.
+
+  order_service:
+    image: python:3.12-slim
+    working_dir: /app
+    volumes:
+      - ./services/order_service:/app
+    command: ["python", "main.py"]
+    env_file:
+      - .env
+
+  inventory_service:
+    image: python:3.12-slim
+    working_dir: /app
+    volumes:
+      - ./services/inventory_service:/app
+    command: ["python", "main.py"]
+    env_file:
+      - .env
+
+  alert_service:
+    image: python:3.12-slim
+    working_dir: /app
+    volumes:
+      - ./services/alert_service:/app
+    command: ["python", "main.py"]
+    env_file:
+      - .env
+
+  analytics_service:
+    image: python:3.12-slim
+    working_dir: /app
+    volumes:
+      - ./services/analytics_service:/app
+    command: ["python", "main.py"]
+    env_file:
+      - .env
+
+  notification_service:
+    image: python:3.12-slim
+    working_dir: /app
+    volumes:
+      - ./services/notification_service:/app
+    command: ["python", "main.py"]
+    env_file:
+      - .env
+
