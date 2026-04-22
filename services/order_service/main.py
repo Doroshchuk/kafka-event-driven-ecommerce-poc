@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 from datetime import datetime, timezone
+from uuid import uuid4
 
 from confluent_kafka import Producer
 
@@ -14,10 +15,11 @@ def main() -> int:
     producer = Producer({"bootstrap.servers": "localhost:9092"})
     topic = "orders"
 
+    run_suffix = uuid4().hex[:8]
     sample_orders = [
         {
             "event_type": "order_created",
-            "order_id": "order_1001",
+            "order_id": f"order_1001_{run_suffix}",
             "user_id": "user_42",
             "product_id": "product_abc",
             "region": "US",
@@ -26,7 +28,7 @@ def main() -> int:
         },
         {
             "event_type": "order_created",
-            "order_id": "order_1002",
+            "order_id": f"order_1002_{run_suffix}",
             "user_id": "user_7",
             "product_id": "product_xyz",
             "region": "EU",
@@ -35,7 +37,7 @@ def main() -> int:
         },
         {
             "event_type": "order_created",
-            "order_id": "order_1003",
+            "order_id": f"order_1003_{run_suffix}",
             "user_id": "user_99",
             "product_id": "product_123",
             "region": "Africa",
