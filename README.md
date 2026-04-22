@@ -10,3 +10,9 @@ Event-driven architecture demo using Kafka, Python, and Docker.
 - replay
 - stream processing
 
+## Local setup
+
+- Start: `docker compose up -d`
+- Kafka: `localhost:9092`
+- Kafka UI: `http://localhost:8080`
+
