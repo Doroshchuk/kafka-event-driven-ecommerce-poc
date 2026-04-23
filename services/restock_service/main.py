@@ -16,7 +16,7 @@ def main() -> int:
 
     alerts_topic = "alerts"
     consumer.subscribe([alerts_topic])
-    print(f"restock_service: consuming from {alerts_topic}")
+    print("restock_service: consuming from alerts")
 
     try:
         while True:
@@ -37,8 +37,13 @@ def main() -> int:
                 continue
 
             product_id = payload.get("product_id")
-            print(f"restock_service: received low inventory alert for product {product_id}")
-            print(f"restock_service: restock requested for product {product_id}")
+            remaining_stock = payload.get("remaining_stock")
+            threshold = payload.get("threshold")
+            print(
+                f"restock_service: received low_inventory for product {product_id} "
+                f"(remaining_stock={remaining_stock}, threshold={threshold})"
+            )
+            print(f"restock_service: triggered restock workflow for product {product_id}")
     except KeyboardInterrupt:
         print("restock_service: stopping (Ctrl+C)")
     finally:

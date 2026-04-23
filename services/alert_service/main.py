@@ -31,13 +31,23 @@ def main() -> int:
         if err is not None:
             print(f"alert_service: produce failed ({err})")
         else:
+            product_id = "<unknown>"
+            try:
+                v = msg.value()
+                if v is not None:
+                    obj = json.loads(v.decode("utf-8"))
+                    product_id = str(obj.get("product_id", product_id))
+            except Exception:
+                pass
             print(
-                "alert_service: produced low_inventory event "
-                f"to {msg.topic()} [partition={msg.partition()} offset={msg.offset()}]"
+                "alert_service: delivered low_inventory for product "
+                f"{product_id} to {msg.topic()} "
+                f"[partition={msg.partition()} offset={msg.offset()}]"
             )
 
     try:
         while True:
+            producer.poll(0)
             msg = consumer.poll(1.0)
             if msg is None:
                 continue
@@ -57,7 +67,7 @@ def main() -> int:
             product_id = payload.get("product_id")
             remaining_stock = payload.get("remaining_stock")
             print(
-                f"alert_service: received inventory update product={product_id} "
+                f"alert_service: received inventory event product={product_id} "
                 f"remaining_stock={remaining_stock}"
             )
 
@@ -80,7 +90,9 @@ def main() -> int:
                     value=to_json_bytes(alert_event),
                     on_delivery=on_delivery,
                 )
-                producer.poll(0)
+                print(
+                    f"alert_service: queued low_inventory for product {product_id}"
+                )
             else:
                 print(f"alert_service: threshold not crossed for {product_id}")
     except KeyboardInterrupt:

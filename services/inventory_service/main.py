@@ -33,13 +33,23 @@ def main() -> int:
         if err is not None:
             print(f"inventory_service: produce failed ({err})")
         else:
+            product_id = "<unknown>"
+            try:
+                v = msg.value()
+                if v is not None:
+                    obj = json.loads(v.decode("utf-8"))
+                    product_id = str(obj.get("product_id", product_id))
+            except Exception:
+                pass
             print(
-                "inventory_service: produced inventory event "
-                f"to {msg.topic()} [partition={msg.partition()} offset={msg.offset()}]"
+                "inventory_service: delivered inventory_updated for product "
+                f"{product_id} to {msg.topic()} "
+                f"[partition={msg.partition()} offset={msg.offset()}]"
             )
 
     try:
         while True:
+            producer.poll(0)
             msg = consumer.poll(1.0)
             if msg is None:
                 continue
@@ -87,7 +97,9 @@ def main() -> int:
                 value=to_json_bytes(inventory_event),
                 on_delivery=on_delivery,
             )
-            producer.poll(0)
+            print(
+                f"inventory_service: queued inventory_updated for product {product_id}"
+            )
     except KeyboardInterrupt:
         print("inventory_service: stopping (Ctrl+C)")
     finally:
